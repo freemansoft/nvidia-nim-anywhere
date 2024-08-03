@@ -31,7 +31,9 @@ Forking this repository is recomended for development as changes will be able to
 
     ![AI Workbench Side Menu](_static/nvwb_left_menu.png)
 
-1. Scroll down to the **Secrets** section and find the *NGC_API_KEY* entry. Press *Configure* and provide the personal key for NGC that was generated earlier.
+1. Scroll down to the **Variables** section and find *NGC_HOME* entry. It should be set to something like `~/.cache/nvidia-nims`. The value here is used by workbench.  This same location also appears in the **Mounts** section that mounts this directory into the container.
+
+1. Scroll down to the **Secrets** section and find the *NGC_API_KEY* entry. Press *Configure* and provide the personal key for NGC that as generated earlier.
 
 1. Scroll down to the **Mounts section**. Here, there are two mounts to configure.
 
