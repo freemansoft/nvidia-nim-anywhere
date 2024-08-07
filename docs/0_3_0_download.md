@@ -27,6 +27,16 @@ Forking this repository is recomended for development as changes will be able to
 
     ![AI Workbench Log Viewer](_static/nvwb_logs.png)
 
+</details>
+
+## Configure this project
+The project must be confugred to work with local machine resources.
+
+<details>
+<summary>
+<b>Expand this section for a details on configuring this project.</b>
+</summary>
+
 1. Before running for the first time, project specific configuration must be provided. Project configuration is done using the *Environment* tab from the left-hand panel.
 
     ![AI Workbench Side Menu](_static/nvwb_left_menu.png)
@@ -35,7 +45,7 @@ Forking this repository is recomended for development as changes will be able to
 
 1. Scroll down to the **Secrets** section and find the *NGC_API_KEY* entry. Press *Configure* and provide the personal key for NGC that as generated earlier.
 
-1. Scroll down to the **Mounts section**. Here, there are two mounts to configure.
+1. Scroll down to the **Mounts** section. Here, there are two mounts to configure.
 
     a. Find the mount for /var/host-run. This is used to allow the development environment to access the host’s Docker daemon in a pattern called Docker out of Docker. Press **Configure** and provide the directory `/var/run`.
 
@@ -52,6 +62,7 @@ Forking this repository is recomended for development as changes will be able to
     chmod 2777 ~/.cache/nvidia-nims
     ```
 
+1. A rebuild will occur after these settings have been changed.
 
 1. Once the build completes with a *Build Ready* message, all applications will be made available to you.
 

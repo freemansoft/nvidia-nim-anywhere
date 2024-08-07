@@ -17,7 +17,6 @@ Screenshot](.static/c15df7fd1efa293829b1e03871d7c4f5707d9396.png)
     - [Client Machine Install](#client-machine-install)
     - [Remote Machine Install](#remote-machine-install)
   - [Download this project](#download-this-project)
-  - [Configure this project](#configure-this-project)
   - [Start This Project](#start-this-project)
   - [Populating the Knowledge Base](#populating-the-knowledge-base)
 - [Developing Your Own Applications](#developing-your-own-applications)
@@ -46,6 +45,7 @@ Screenshot](.static/c15df7fd1efa293829b1e03871d7c4f5707d9396.png)
   - [Environment Variables](#environment-variables)
   - [Python Environment Packages](#python-environment-packages)
   - [Operating System Configuration](#operating-system-configuration)
+  - [Updating Dependencies](#updating-dependencies)
 
 # Quick Start
 
@@ -362,33 +362,18 @@ section.
     ![AI Workbench Log
     Viewer](.static/ad5c07bcfaa47cae8b5bbc617520bdc8921607b8.png)
 
-</details>
-
-## Configure this project
-The project must be confugred to work with local machine resources.
-
-<details>
-<summary>
-<b>Expand this section for a details on configuring this project.</b>
-</summary>
-
-1.  Before running for the first time, project specific configuration
+5.  Before running for the first time, project specific configuration
     must be provided. Project configuration is done using the
     *Environment* tab from the left-hand panel.
 
     ![AI Workbench Side
     Menu](.static/c330ddf4e4f18b0bfef1bfe44a49af4b5d6ba377.png)
 
-2.  Scroll down to the **Variables** section and find *NGC\_HOME* entry.
-    It should be set to something like `~/.cache/nvidia-nims`. The value
-    here is used by workbench.  This same location also appears in the
-    **Mounts** section that mounts this directory into the container.
-
-3.  Scroll down to the **Secrets** section and find the *NGC\_API\_KEY*
+6.  Scroll down to the **Secrets** section and find the *NGC\_API\_KEY*
     entry. Press *Configure* and provide the personal key for NGC that
     was generated earlier.
 
-4.  Scroll down to the **Mounts** section. Here, there are two mounts to
+7.  Scroll down to the **Mounts section**. Here, there are two mounts to
     configure.
 
     a. Find the mount for /var/host-run. This is used to allow the
@@ -415,9 +400,7 @@ The project must be confugred to work with local machine resources.
     chmod 2777 ~/.cache/nvidia-nims
     ```
 
-5.  A rebuild will occur after these settings have been changed.
-
-6.  Once the build completes with a *Build Ready* message, all
+8.  Once the build completes with a *Build Ready* message, all
     applications will be made available to you.
 
 </details>
@@ -569,7 +552,7 @@ environment variables will take precedence over all values from files.
 # Your API key for authentication to AI Foundation.
 # ENV Variables: NGC_API_KEY, NVIDIA_API_KEY, APP_NVIDIA_API_KEY
 # Type: string, null
-nvidia_api_key: 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
+nvidia_api_key: ~
 
 # The Data Source Name for your Redis DB.
 # ENV Variables: APP_REDIS_DSN
@@ -592,7 +575,24 @@ embedding_model:
     # The name of the model to request.
     # ENV Variables: APP_EMBEDDING_MODEL__NAME
     # Type: string
-    name: NV-Embed-QA
+    name: nvidia/nv-embedqa-e5-v5
+
+    # The URL to the model API.
+    # ENV Variables: APP_EMBEDDING_MODEL__URL
+    # Type: string
+    url: https://integrate.api.nvidia.com/v1
+
+
+reranking_model:
+    # The name of the model to request.
+    # ENV Variables: APP_RERANKING_MODEL__NAME
+    # Type: string
+    name: nv-rerank-qa-mistral-4b:1
+
+    # The URL to the model API.
+    # ENV Variables: APP_RERANKING_MODEL__URL
+    # Type: string
+    url: https://integrate.api.nvidia.com/v1
 
 
 milvus:
@@ -630,7 +630,7 @@ chain_url: http://localhost:3030/
 # Type: string
 proxy_prefix: /
 
-# Path to the chain server's config.
+# Path to the chain server&#39;s config.
 # ENV Variables: APP_CHAIN_CONFIG_FILE
 # Type: string
 chain_config_file: ./config.yaml
@@ -884,3 +884,37 @@ the \[`apt.txt`\] file. To make other changes to the operating system
 such as manipulating files, adding environment variables, etc; use the
 [`postBuild.bash`](./postBuild.bash) and
 [`preBuild.bash`](./preBuild.bash) files.
+
+## Updating Dependencies
+
+It is typically good practice to update dependencies monthly to ensure
+no CVEs are exposed through misused dependencies. The following process
+can be used to patch this project. It is recommended to run the
+regression testing after the patch to ensure nothing has broken in the
+update.
+
+1.  **Update Environment:** In the workbench GUI, open the project and
+    navigate to the Environment pane. Check if there is an update
+    available for the base image. If an updated base image is available,
+    apply the update and rebuild the environment. Address any build
+    errors. Ensure that all of the applications can start.
+2.  **Update Python Packages and NIMs:** The Python dependencies and NIM
+    applications can be updated automtically by running the
+    `/project/code/tools/bump.sh` script.
+3.  **Update Remaining applications:** For the remaining applications,
+    manually check their default tag and compare to the latest. Update
+    where appropriate and ensure that the applications still start up
+    successfully.
+4.  **Restart and rebuild the environment.**
+5.  **Audit Python Envitonment:** It is now best to check the installed
+    versions of ALL Python packages, not just the direct dependencies.
+    To accomplish this, run `/project/code/tools/audit.sh`. This script
+    will print out a report of all Python packages in a warning state
+    and all packages in an error state. Anything in an error state must
+    be resolved as it will have active CVEs and known vulnerabilities.
+6.  **Check Dependabot Alerts:** Check all of the
+    [Dependabot](https://github.com/NVIDIA/nim-anywhere/security/dependabot)
+    alerts and ensure they should be resolved.
+7.  **Regression testing:** Run through the entire demo, from document
+    ingesting to the frontend, and ensure it is still functional and
+    that the GUI looks correct.
